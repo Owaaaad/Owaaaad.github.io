@@ -50,8 +50,6 @@ document.getElementById("generate").addEventListener("click", generateScenario);
 document.getElementById("grade").addEventListener("click", checkAnswer);
 
 function generateScenario() {
-    // Your code to generate the scenario based on protocol, src ip, dst ip, etc.
-    // Example:
     const protocols = ['TCP', 'UDP', 'ICMP'];
     const srcIP = '192.168.1.0';
     const dstIP = '192.168.2.0';
@@ -106,6 +104,49 @@ function checkAnswer() {
         document.getElementById("result").innerText = `Incorrect! The correct answer is: ${correctAnswer}`;
     }
 }
+function generateScenario() {
+    const protocols = ['TCP', 'UDP', 'ICMP'];
+    const accessTypes = ['permit', 'deny'];
+    const srcIP = `192.168.${Math.floor(Math.random() * 255) + 1}.0`;
+    const dstIP = `192.168.${Math.floor(Math.random() * 255) + 1}.0`;
+    const srcSlash = Math.floor(Math.random() * 7) + 24;
+    const dstSlash = Math.floor(Math.random() * 7) + 24;
+    const srcWildcard = (0xFFFFFFFF >> (32 - srcSlash)) ^ 0xFFFFFFFF;
+    const dstWildcard = (0xFFFFFFFF >> (32 - dstSlash)) ^ 0xFFFFFFFF;
+
+    const protocol = protocols[Math.floor(Math.random() * protocols.length)];
+    const accessType = accessTypes[Math.floor(Math.random() * accessTypes.length)];
+
+    currentScenario = {
+        srcIP,
+        dstIP,
+        srcSlash,
+        dstSlash,
+        srcWildcard,
+        dstWildcard,
+        protocol,
+        accessType,
+    };
+
+    const scenarioText = `Create an ACL to ${accessType} ${protocol} traffic from ${srcIP}/${srcSlash} to ${dstIP}/${dstSlash}.`;
+    document.getElementById("scenario").innerText = scenarioText;
+}
+
+function checkAnswer() {
+    const userAnswer = document.getElementById("answer").value.trim();
+    const correctAnswer = `access-list 100 ${currentScenario.accessType} ${currentScenario.protocol} ${currentScenario.srcIP} ${intToIPv4(currentScenario.srcWildcard)} ${currentScenario.dstIP} ${intToIPv4(currentScenario.dstWildcard)}`;
+
+    if (userAnswer === correctAnswer) {
+        document.getElementById("result").innerText = "Correct!";
+    } else {
+        document.getElementById("result").innerText = `Incorrect! The correct answer is: ${correctAnswer}`;
+    }
+}
+
+function intToIPv4(int) {
+    return ((int >> 24) & 0xFF) + '.' + ((int >> 16) & 0xFF) + '.' + ((int >> 8) & 0xFF) + '.' + (int & 0xFF);
+}
+
     </script>
 </body>
 </html>
