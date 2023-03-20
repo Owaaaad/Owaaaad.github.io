@@ -154,8 +154,8 @@ function generateScenario() {
     const dstIP = `192.168.${Math.floor(Math.random() * 255) + 1}.0`;
     const srcSlash = Math.floor(Math.random() * 7) + 24;
     const dstSlash = Math.floor(Math.random() * 7) + 24;
-    const srcWildcard = intToIPv4((0xFFFFFFFF >> srcSlash) << srcSlash ^ 0xFFFFFFFF);
-    const dstWildcard = intToIPv4((0xFFFFFFFF >> dstSlash) << dstSlash ^ 0xFFFFFFFF);
+    const srcWildcard = (1 << (32 - srcSlash)) - 1;
+    const dstWildcard = (1 << (32 - dstSlash)) - 1;
 
     const protocol = protocols[Math.floor(Math.random() * protocols.length)];
     const accessType = accessTypes[Math.floor(Math.random() * accessTypes.length)];
